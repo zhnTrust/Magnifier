@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,7 +21,7 @@ import android.view.ViewTreeObserver;
  * 还可以写一个自定义的imageview，用于带放大镜功能的imageview，可以直接根据源bm进行放大功能，放大效果会更加清晰
  */
 
-public class MagnifierView extends View {
+public class FixedMagnifierView extends View {
     private float locationX = 0, locationY = 0;   //记录当前的原始位置。
     private float downX = 0, downY = 0;           //记录开始按下的位置。
     private Bitmap bm;                            //获得当前activity的截图或需要放大的图片
@@ -36,7 +37,7 @@ public class MagnifierView extends View {
     private int magnifierAlpha;                  //放大镜透明度
     private float magnifierLen;                  //放大镜正方形边长
 
-    public MagnifierView(Builder builder, Context context) {//对象初始化一次就行了
+    public FixedMagnifierView(Builder builder, Context context) {//对象初始化一次就行了
         super(context);
         activity = (Activity) context;
         this.rootVg = builder.rootVg;
@@ -51,17 +52,19 @@ public class MagnifierView extends View {
         this.initLeft = builder.initLeft;
         this.initTop = builder.initTop;
 
-        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(viewW, viewH);
+        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
         this.setLayoutParams(lp);
 
         magnifierLen = viewH > viewW ? viewW : viewH;
     }
 
-    public MagnifierView(Context context, AttributeSet attrs) {
+    public FixedMagnifierView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MagnifierView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public FixedMagnifierView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -79,8 +82,8 @@ public class MagnifierView extends View {
                 public void onGlobalLayout() {
                     if (bm == null) {
                         //初始化控件位置
-                        MagnifierView.this.setX(initLeft);
-                        MagnifierView.this.setY(initTop);
+                        FixedMagnifierView.this.setX(initLeft);
+                        FixedMagnifierView.this.setY(initTop);
                         bm = getScreenBm(rootVg);//获得指定布局的截图
                         bitmapShader = new BitmapShader(bm, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);//利用BitmapShader画圆,模式可以查询用法
                         invalidate();
@@ -116,7 +119,8 @@ public class MagnifierView extends View {
         private int initLeft = 0, initTop = 0;          //初始位置，相对于父控件的位置
         private int viewW = 300, viewH = 300;           //控件宽高
         private float scaleX = 1.5f, scaleY = 1.5f;     //x,y的放大倍数
-        private String magnifierColor = "#ff0000";      //放大镜颜色
+
+        private String magnifierColor = "#ff0000";      //放大镜颜色(红色)
         private int magnifierAlpha = 32;                //放大镜透明度
 
         private ViewGroup rootVg;
@@ -169,8 +173,8 @@ public class MagnifierView extends View {
             return this;
         }
 
-        public MagnifierView build() {
-            return new MagnifierView(this, context);
+        public FixedMagnifierView build() {
+            return new FixedMagnifierView(this, context);
         }
     }
 
@@ -178,13 +182,17 @@ public class MagnifierView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
+                //相对于父布局
                 locationX = getX();
                 locationY = getY();
 
+
+                //相对于屏幕
                 downX = event.getRawX();
                 downY = event.getRawY();
                 break;
             case MotionEvent.ACTION_MOVE:   //随手移动，getRawX()与getX()有区别
+                //不移动
                 setX(locationX + (event.getRawX() - downX));
                 setY(locationY + (event.getRawY() - downY));
                 invalidate();
@@ -201,15 +209,18 @@ public class MagnifierView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         if (bm != null) {
+            //第一层
             Paint paintBg = new Paint();        //背景防止加载自带透明的图片时，放大图片后面能看到原来的图片
             paintBg.setAntiAlias(true);         //抗锯齿
-            paintBg.setColor(Color.parseColor("#ffffff"));
-            canvas.drawCircle(magnifierLen / 2, magnifierLen / 2, magnifierLen / 2, paintBg);
+            paintBg.setColor(Color.parseColor("#ffffff"));  //白色
+            paintBg.setAlpha(100);
+//            canvas.drawCircle(magnifierLen / 2, magnifierLen / 2, magnifierLen / 2, paintBg);
 
+
+            //第二层
             Paint paint = new Paint();
             paint.setAntiAlias(true);           //抗锯齿
-            paint.setShader(bitmapShader);      //bitmapShader画圆形图片
-
+            paint.setShader(bitmapShader);      //bitmapShader画圆形图片(图片画笔)
             //创建矩阵，缩放平移图片
             Matrix matrix = new Matrix();
             matrix.setScale(scaleX, scaleY);
@@ -220,11 +231,12 @@ public class MagnifierView extends View {
             bitmapShader.setLocalMatrix(matrix);                    //利用bitmapShader画圆形图片
             canvas.drawCircle(magnifierLen / 2, magnifierLen / 2, magnifierLen / 2, paint);
 
+            //第三层
             Paint paintShade = new Paint();                         //外层遮罩
             paintShade.setAntiAlias(true);                          //抗锯齿
             paintShade.setColor(Color.parseColor(magnifierColor));  //设置边框
             paintShade.setAlpha(magnifierAlpha);
-            canvas.drawCircle(magnifierLen / 2, magnifierLen / 2, magnifierLen / 2, paintShade);
+//            canvas.drawCircle(magnifierLen / 2, magnifierLen / 2, magnifierLen / 2, paintShade);
         }
     }
 

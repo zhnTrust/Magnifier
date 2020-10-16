@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 29
+    buildToolsVersion "30.0.2"
     defaultConfig {
         applicationId "com.ct.magnifierdemo"
-        minSdkVersion 14
-        targetSdkVersion 25
+        minSdkVersion 15
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
     }
@@ -19,7 +19,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile project(path: ':ctmagnifier')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation project(path: ':ctmagnifier')
+    implementation project(path: ':digitalclock')
 }

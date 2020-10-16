@@ -1,1 +1,1 @@
-include ':app', ':ctmagnifier'
+include ':app', ':ctmagnifier', ':digitalclock'
