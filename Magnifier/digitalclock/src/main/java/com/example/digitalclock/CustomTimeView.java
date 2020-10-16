@@ -6,16 +6,13 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import java.util.Calendar;
 
 public class CustomTimeView extends TextView {
 
     private final CustomTimeView textView;
     private String time;
-    private TimeHandler mTimehandler = new TimeHandler();
+    private TimeHandler mTimeHandler = new TimeHandler();
     public CustomTimeView(Context context) {
         this(context, null);
     }
@@ -35,7 +32,7 @@ public class CustomTimeView extends TextView {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    mTimehandler.startScheduleUpdate();
+                    mTimeHandler.startScheduleUpdate();
                 }
             }).start();
         } catch (Exception e) {
@@ -81,7 +78,7 @@ public class CustomTimeView extends TextView {
     public String getTime() //返回当前的时间，并结束handler的信息发送
     {
         //停止发送消息
-        mTimehandler.stopScheduleUpdate();
+        mTimeHandler.stopScheduleUpdate();
         return time;
     }
 

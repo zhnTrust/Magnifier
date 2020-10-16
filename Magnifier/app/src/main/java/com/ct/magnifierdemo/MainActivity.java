@@ -3,6 +3,7 @@ package com.ct.magnifierdemo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 
@@ -10,10 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.ct.ctmagnifier.FixedMagnifierView;
 import com.ct.ctmagnifier.MagnifierView;
+import com.ct.ctmagnifier.MyMagnifier;
 
 public class MainActivity extends AppCompatActivity {
     private Switch switchBtn, switchBtn2;
     private RelativeLayout rl;
+    private ImageView iv_center;
+    private ImageView iv_bottom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +25,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         rl = (RelativeLayout) findViewById(R.id.rl);
+        iv_bottom = findViewById(R.id.iv_bottom);
+        iv_center = findViewById(R.id.iv_center);
+
+        new MyMagnifier.Builder(this).target(iv_center).build().attachToParent();
+
 
         switchBtn = (Switch) findViewById(R.id.switchBtn);
         final FixedMagnifierView mv = new FixedMagnifierView.Builder(MainActivity.this)
@@ -35,15 +44,14 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     mv.startViewToRoot();
-                }
-                else {
+                } else {
                     mv.closeViewToRoot();
                 }
             }
         });
 
         switchBtn2 = (Switch) findViewById(R.id.switchBtn2);
-        final FixedMagnifierView mv2 = new FixedMagnifierView.Builder(MainActivity.this)
+        final MagnifierView mv2 = new MagnifierView.Builder(MainActivity.this)
                 .rootVg(rl)
                 .viewWH(200, 200)
                 .build();
@@ -52,8 +60,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     mv2.startViewToRoot();
-                }
-                else {
+                } else {
                     mv2.closeViewToRoot();
                 }
             }
@@ -66,5 +73,24 @@ public class MainActivity extends AppCompatActivity {
                 mv2.resetXY();
             }
         });
+
+        //rl.setOnClickListener(new View.OnClickListener() {
+        //    @Override
+        //    public void onClick(View v) {
+        //        //开启缓存并创建
+        //        rl.setDrawingCacheEnabled(true);
+        //        rl.buildDrawingCache();
+        //        Bitmap viewShot = rl.getDrawingCache();
+        //        iv_bottom.setImageDrawable(new BitmapDrawable(viewShot));
+        //        iv_bottom.invalidate();
+        //        //释放缓存并关闭
+        //        rl.destroyDrawingCache();
+        //        rl.setDrawingCacheEnabled(false);
+        //
+        //
+        //    }
+        //});
+
+
     }
 }

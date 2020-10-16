@@ -27,12 +27,14 @@
         android:layout_height="wrap_content"
         android:text="复位" />
 
+
     <RelativeLayout
         android:id="@+id/rl"
         android:layout_width="match_parent"
         android:layout_height="160dp">
 
         <ImageView
+            android:id="@+id/iv_center"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/test2" />
@@ -44,6 +46,7 @@
     </RelativeLayout>
 
     <ImageView
+        android:id="@+id/iv_bottom"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/test" />
