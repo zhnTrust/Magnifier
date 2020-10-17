@@ -46,6 +46,9 @@ public class MagnifierView1 extends View {
     private Paint mPaintPic;
     private Matrix mMatrixPic;
 
+    private float mPointXTo, mPointYTo;
+    private float mDistanceX, mDistanceY;
+
 
     public MagnifierView1(Builder builder, Context context) {//对象初始化一次就行了
         super(context);
@@ -97,6 +100,8 @@ public class MagnifierView1 extends View {
             lp.addRule(RelativeLayout.CENTER_VERTICAL);
             this.setLayoutParams(lp);
             rootVg.addView(this);
+            mTargetX = ivWidth;
+            mTargetY = viewH / 2;
             //view加载完成调用,防止直接在activity create方法里调用无法使用,因为create里，绘制还没有完成
             viewTreeObserver = rootVg.getViewTreeObserver();
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -130,6 +135,9 @@ public class MagnifierView1 extends View {
     public void resetXY() {
 //        this.setX(initLeft);
 //        this.setY(initTop);
+        mDistanceX = -mDistanceX;
+        mDistanceY = -mDistanceY;
+
         invalidate();
     }
 
@@ -149,14 +157,21 @@ public class MagnifierView1 extends View {
                 //触摸点相对于屏幕
                 eventX2Screen = event.getRawX();
                 eventY2Screen = event.getRawY();
+
+
+                float pointXFrom = getX() + event.getX();
+                float pointYFrom = getY() + event.getY();
+                mDistanceX = mPointXTo - pointXFrom;
+                mDistanceY = mPointYTo - pointYFrom;
+                invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:   //随手移动，getRawX()与getX()有区别
                 //不移动
-                mTargetX = thisX2Parent + (event.getRawX() - eventX2Screen);
-                mTargetY = thisY2Parent + (event.getRawY() - eventY2Screen);
-//                setX(thisX2Parent + (event.getRawX() - eventX2Screen));
+//                mTargetX = thisX2Parent + (event.getRawX() - eventX2Screen);
+//                mTargetY = thisY2Parent + (event.getRawY() - eventY2Screen);
+////                setX(thisX2Parent + (event.getRawX() - eventX2Screen));
 //                setY(thisY2Parent + (event.getRawY() - eventY2Screen));
-                invalidate();
+//                invalidate();
                 break;
         }
         return true;
@@ -200,8 +215,8 @@ public class MagnifierView1 extends View {
 //            float translateX = scaleX * mTargetX + (scaleX - 1) * magnifierLen / 2;
 //            float translateY = scaleY * mTargetY + (scaleY - 1) * magnifierLen / 2;
             float translateX = getMeasuredWidth() - magnifierLen / 2;
-            float translatey = getMeasuredHeight() -magnifierLen / 2;
-            mMatrixPic.postTranslate(translateX,translatey);
+            float translatey = getMeasuredHeight() - magnifierLen / 2;
+            mMatrixPic.postTranslate(mDistanceX, mDistanceY);
             //利用bitmapShader画圆形图片
             bitmapShader.setLocalMatrix(mMatrixPic);
 

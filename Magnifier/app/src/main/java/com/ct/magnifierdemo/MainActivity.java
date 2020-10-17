@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         iv_center = findViewById(R.id.iv_center);
 
 
-
         switchBtn = (Switch) findViewById(R.id.switchBtn);
         switchBtn2 = (Switch) findViewById(R.id.switchBtn2);
         mBtnReset = findViewById(R.id.btn);
@@ -108,8 +107,13 @@ public class MainActivity extends AppCompatActivity {
         mBtnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMagnifierView1.resetXY();
-                mMagnifierView.resetXY();
+                if (mMagnifierView1 != null && mMagnifierView1.getParent() != null) {
+                    mMagnifierView1.resetXY();
+                }
+                if (mMagnifierView != null && mMagnifierView.getParent() != null) {
+                    mMagnifierView.resetXY();
+                }
+
             }
         });
 
