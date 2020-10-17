@@ -217,6 +217,10 @@ public class MagnifierView extends View {
             matrix.postTranslate(
                     -(scaleX * getX() + (scaleX - 1) * magnifierLen / 2),
                     -(scaleY * getY() + (scaleY - 1) * magnifierLen / 2));
+//            getLeft(),getTop()值是不变的即初始值
+//            matrix.postTranslate(
+//                    -(scaleX * getLeft() + (scaleX - 1) * magnifierLen / 2),
+//                    -(scaleY * getTop() + (scaleY - 1) * magnifierLen / 2));
             bitmapShader.setLocalMatrix(matrix);                    //利用bitmapShader画圆形图片
             canvas.drawCircle(magnifierLen / 2, magnifierLen / 2, magnifierLen / 2, paint);
 
