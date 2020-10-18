@@ -2,32 +2,37 @@ package com.ct.magnifierdemo;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.ct.ctmagnifier.MagnifierView1;
 import com.ct.ctmagnifier.MagnifierView;
+import com.ct.ctmagnifier.MagnifierView1;
 import com.ct.ctmagnifier.MagnifierView2;
+import com.ct.ctmagnifier.MyBall;
 
 public class MainActivity extends AppCompatActivity {
-    private Switch switchBtn, switchBtn2;
-    private RelativeLayout mRelativeLayout;
-    private ImageView iv_center;
-    private ImageView iv_bottom;
 
-    private View mBtnReset;
+    private static final String TAG = "TAG==>MainActivity";
+    private Switch switchBtn1, switchBtn2, switchBtn3;
+    private LinearLayout ll_contents;
+    private RelativeLayout rl_image;
+
+    private Button mBtnReset;
 
     private MagnifierView mMagnifierView;
-    private MagnifierView1 mMagnifierView1;
-    private MagnifierView2 mMagnifierView2;
+    //private MagnifierView1 mMagnifierView1;
+    //private MagnifierView2 mMagnifierView2;
 
-    private float mPreX = 0.0f, mPreY = 0.0f;
+    private MyBall myBall1;
+    private MyBall myBall2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,53 +44,64 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mRelativeLayout = findViewById(R.id.rl);
-        iv_bottom = findViewById(R.id.iv_bottom);
-        iv_center = findViewById(R.id.iv_center);
+        RelativeLayout contentView = findViewById(R.id.activity_main);
+        ll_contents = findViewById(R.id.ll_contents);
+        rl_image = findViewById(R.id.rl_image);
+
+        switchBtn1 = findViewById(R.id.switchBtn1);
+        switchBtn2 = findViewById(R.id.switchBtn2);
+        switchBtn3 = findViewById(R.id.switchBtn3);
+        mBtnReset = findViewById(R.id.btn_restore);
 
 
-        switchBtn = (Switch) findViewById(R.id.switchBtn);
-        switchBtn2 = (Switch) findViewById(R.id.switchBtn2);
-        mBtnReset = findViewById(R.id.btn);
-
-//        mMagnifierView2 = new MagnifierView2.Builder(this)
-//                .target(iv_center)
-//                .scale(1.0f)
-//                .build();
-//        mMagnifierView2.attachToParent();
-
-        mMagnifierView1 = new MagnifierView1.Builder(MainActivity.this)
-                .rootVg(mRelativeLayout)
-                .viewWH(320, 320)
-                .scale(1.0f)
-                .alpha(16)
-                .color("#ff00ff")
-                .build();
-
-
+        //mMagnifierView1 = new MagnifierView1.Builder(MainActivity.this)
+        //        //.rootVg(mRelativeLayout)
+        //        .viewWH(320, 320)
+        //        .scale(1.0f)
+        //        .alpha(16)
+        //        .color("#ff00ff")
+        //        .build();
+        //
+        //
         mMagnifierView = new MagnifierView.Builder(MainActivity.this)
-                .rootVg(mRelativeLayout)
-                .scale(1.5f)    //原图
+                .rootVg(ll_contents)
+                .scale(1.5f)    //原图@
                 .viewWH(200, 200)
                 .build();
+
+        myBall1 = new MyBall.Builder(this)
+                .size(280)
+                .scale(1.5f)
+                .parent(contentView)
+                .singleRlRule(RelativeLayout.CENTER_HORIZONTAL)
+                .target(rl_image)
+                .center(79, 55)
+                .build();
+        myBall2 = new MyBall.Builder(this)
+                .size(300)
+                .scale(1.5f)
+                .parent(contentView)
+                .singleRlRule(RelativeLayout.ALIGN_PARENT_END)
+                .center(83, 25)
+                .target(ll_contents)
+                .build();
+        myBall1.attachToParent();
+        myBall2.attachToParent();
+        mMagnifierView.startViewToRoot();
+
 
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private void initListener() {
 
-        switchBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switchBtn1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                int measuredHeight = iv_center.getMeasuredHeight();
-                int measuredWidth = iv_center.getMeasuredWidth();
-                int width = iv_center.getWidth();
-                int height = iv_center.getHeight();
                 if (isChecked) {
-                    mMagnifierView1.startViewToRoot();
-                }
-                else {
-                    mMagnifierView1.closeViewToRoot();
+                    myBall1.attachToParent();
+                } else {
+                    myBall1.detachFromParent();
                 }
             }
         });
@@ -95,9 +111,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    mMagnifierView.startViewToRoot();
+                    myBall2.attachToParent();
+                } else {
+                    myBall2.detachFromParent();
                 }
-                else {
+            }
+        });
+        switchBtn3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mMagnifierView.startViewToRoot();
+                } else {
                     mMagnifierView.closeViewToRoot();
                 }
             }
@@ -107,58 +132,58 @@ public class MainActivity extends AppCompatActivity {
         mBtnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mMagnifierView1 != null && mMagnifierView1.getParent() != null) {
-                    mMagnifierView1.resetXY();
+                if (myBall1 != null && myBall1.getParent() != null) {
+                    myBall1.restore();
                 }
-                if (mMagnifierView != null && mMagnifierView.getParent() != null) {
-                    mMagnifierView.resetXY();
+                if (myBall2 != null && myBall2.getParent() != null) {
+                    myBall2.restore();
                 }
-
             }
         });
 
-//        mRelativeLayout.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-//                    case MotionEvent.ACTION_DOWN:
-//
-//                        //重置
-////                        myMagnifier.reFresh(event.getX() - mPreX, event.getY() - mPreY);
-////
-////                        //记录
-////                        mPreX = event.getX();
-////                        mPreY = event.getY();
-//                        break;
-//
-//                    case MotionEvent.ACTION_MOVE:   //随手移动，getRawX()与getX()有区别
-//                        //移动
-//                        mMagnifierView2.reFresh(event.getX() - mPreY, event.getY() - mPreY);
-//
-//                        //记录
-//                        mPreX = event.getX();
-//                        mPreY = event.getY();
-//                        break;
-//                }
-//                return false;
-//            }
-//        });
+        rl_image.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                    case MotionEvent.ACTION_MOVE: {
+                        myBall1.refresh(event.getX(), event.getY());
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
 
-        //mRelativeLayout.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View v) {
-        //        //开启缓存并创建
-        //        mRelativeLayout.setDrawingCacheEnabled(true);
-        //        mRelativeLayout.buildDrawingCache();
-        //        Bitmap viewShot = mRelativeLayout.getDrawingCache();
-        //        iv_bottom.setImageDrawable(new BitmapDrawable(viewShot));
-        //        iv_bottom.invalidate();
-        //        //释放缓存并关闭
-        //        mRelativeLayout.destroyDrawingCache();
-        //        mRelativeLayout.setDrawingCacheEnabled(false);
-        //
-        //
-        //    }
-        //});
+        rl_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick(): ");
+            }
+        });
+
+        ll_contents.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                    case MotionEvent.ACTION_MOVE:
+                        myBall2.refresh(event.getX(), event.getY());
+                        break;
+                }
+                return false;
+            }
+        });
+
+        ll_contents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick(): click");
+            }
+        });
     }
+
 }

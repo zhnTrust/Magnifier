@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,47 +9,94 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_margin">
 
-    <Switch
-        android:id="@+id/switchBtn"
+    <LinearLayout
+        android:id="@+id/ll_tools"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="覆盖映射" />
+        android:orientation="vertical">
 
-    <Switch
-        android:id="@+id/switchBtn2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="动态图片" />
+        <Switch
+            android:id="@+id/switchBtn1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="动态内容" />
 
-    <Button
-        android:id="@+id/btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="复位" />
+        <Switch
+            android:id="@+id/switchBtn2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="映射放大" />
+
+        <Switch
+            android:id="@+id/switchBtn3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="覆盖放大" />
 
 
-    <RelativeLayout
-        android:id="@+id/rl"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_restore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="复位" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_contents"
         android:layout_width="match_parent"
-        android:layout_height="460dp">
-
-        <ImageView
-            android:id="@+id/iv_center"
-            android:layout_width="265dp"
-            android:layout_height="160dp"
-            android:layout_centerVertical="true"
-            android:src="@drawable/test2" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/ll_tools"
+        android:orientation="vertical">
 
         <com.example.digitalclock.CustomTimeView
-            android:layout_width="100dp"
-            android:layout_height="40dp" />
+            android:id="@+id/time1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/rl_image"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:layout_marginTop="320px">
 
-    <ImageView
-        android:id="@+id/iv_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/test" />
+            <com.example.digitalclock.CustomTimeView
+                android:id="@+id/time2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible" />
 
-</LinearLayout>
+            <ImageView
+                android:id="@+id/iv_center"
+                android:layout_width="265dp"
+                android:layout_height="160dp"
+                android:layout_below="@+id/time2"
+                android:layout_alignParentBottom="false"
+                android:src="@drawable/test2" />
+
+            <com.example.digitalclock.CustomTimeView
+                android:id="@+id/time3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/iv_center" />
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/iv_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/test" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

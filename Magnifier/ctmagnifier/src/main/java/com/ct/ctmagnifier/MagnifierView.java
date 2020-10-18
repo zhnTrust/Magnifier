@@ -159,11 +159,9 @@ public class MagnifierView extends View {
         public Builder alpha(int alpha) {
             if (alpha >= 200) {
                 this.magnifierAlpha = 200;
-            }
-            else if (alpha < 0) {
+            } else if (alpha < 0) {
                 this.magnifierAlpha = 0;
-            }
-            else {
+            } else {
                 this.magnifierAlpha = alpha;
             }
             return this;
@@ -205,7 +203,6 @@ public class MagnifierView extends View {
             paintBg.setAntiAlias(true);         //抗锯齿
             paintBg.setColor(Color.parseColor("#ffffff"));
             canvas.drawCircle(magnifierLen / 2, magnifierLen / 2, magnifierLen / 2, paintBg);
-
             Paint paint = new Paint();
             paint.setAntiAlias(true);           //抗锯齿
             paint.setShader(bitmapShader);      //bitmapShader画圆形图片

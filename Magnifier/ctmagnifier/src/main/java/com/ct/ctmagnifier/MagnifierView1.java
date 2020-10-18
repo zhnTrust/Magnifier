@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import android.widget.RelativeLayout;
  */
 
 public class MagnifierView1 extends View {
+    private static final String TAG = "TAG==>MagnifierView1";
     private float thisX2Parent = 0, thisY2Parent = 0;   //记录当前的原始位置。
     private float eventX2Screen = 0, eventY2Screen = 0;           //记录开始按下的位置。
     private Bitmap bm;                            //获得当前activity的截图或需要放大的图片
@@ -38,7 +40,6 @@ public class MagnifierView1 extends View {
     private int magnifierAlpha;                  //放大镜透明度
     private float magnifierLen;                  //放大镜正方形边长
 
-    private float mTargetX = 0.0f, mTargetY = 0.0f;
     private Paint mPaintYellow;
     private Paint mPaintRed;
     private Paint mPaintGreen;
@@ -46,8 +47,7 @@ public class MagnifierView1 extends View {
     private Paint mPaintPic;
     private Matrix mMatrixPic;
 
-    private float mPointXTo, mPointYTo;
-    private float mDistanceX, mDistanceY;
+    private float mPreX, mPreY;
 
 
     public MagnifierView1(Builder builder, Context context) {//对象初始化一次就行了
@@ -100,8 +100,6 @@ public class MagnifierView1 extends View {
             lp.addRule(RelativeLayout.CENTER_VERTICAL);
             this.setLayoutParams(lp);
             rootVg.addView(this);
-            mTargetX = ivWidth;
-            mTargetY = viewH / 2;
             //view加载完成调用,防止直接在activity create方法里调用无法使用,因为create里，绘制还没有完成
             viewTreeObserver = rootVg.getViewTreeObserver();
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -135,12 +133,17 @@ public class MagnifierView1 extends View {
     public void resetXY() {
 //        this.setX(initLeft);
 //        this.setY(initTop);
-        mDistanceX = -mDistanceX;
-        mDistanceY = -mDistanceY;
 
         invalidate();
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction()==MotionEvent.ACTION_MOVE){
+            Log.d(TAG, "dispatchTouchEvent(): move");
+        }
+        return super.dispatchTouchEvent(event);
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -161,9 +164,10 @@ public class MagnifierView1 extends View {
 
                 float pointXFrom = getX() + event.getX();
                 float pointYFrom = getY() + event.getY();
-                mDistanceX = mPointXTo - pointXFrom;
-                mDistanceY = mPointYTo - pointYFrom;
-                invalidate();
+                //invalidate();
+                mPreX = event.getX();
+                mPreY = event.getY();
+                Log.d(TAG, "onTouchEvent(): down");
                 break;
             case MotionEvent.ACTION_MOVE:   //随手移动，getRawX()与getX()有区别
                 //不移动
@@ -172,10 +176,12 @@ public class MagnifierView1 extends View {
 ////                setX(thisX2Parent + (event.getRawX() - eventX2Screen));
 //                setY(thisY2Parent + (event.getRawY() - eventY2Screen));
 //                invalidate();
+                Log.d(TAG, "onTouchEvent(): move");
+                break;
+            default:
                 break;
         }
-        return true;
-//        return super.onTouchEvent(event);
+        return false;
     }
 
     @Override
@@ -214,18 +220,16 @@ public class MagnifierView1 extends View {
 //                    -(scaleY * mTargetY + (scaleY - 1) * magnifierLen / 2));
 //            float translateX = scaleX * mTargetX + (scaleX - 1) * magnifierLen / 2;
 //            float translateY = scaleY * mTargetY + (scaleY - 1) * magnifierLen / 2;
-            float translateX = getMeasuredWidth() - magnifierLen / 2;
-            float translatey = getMeasuredHeight() - magnifierLen / 2;
-            mMatrixPic.postTranslate(mDistanceX, mDistanceY);
+            mMatrixPic.postTranslate(0, 0);
             //利用bitmapShader画圆形图片
             bitmapShader.setLocalMatrix(mMatrixPic);
 
             //右上角
-            canvas.drawCircle(
-                    (getMeasuredWidth() - magnifierLen / 2),
-                    (magnifierLen / 2),
-                    magnifierLen / 2,
-                    mPaintPic);
+            //canvas.drawCircle(
+            //        (getMeasuredWidth() - magnifierLen / 2),
+            //        (magnifierLen / 2),
+            //        magnifierLen / 2,
+            //        mPaintPic);
 
 
             //右下角
@@ -254,8 +258,7 @@ public class MagnifierView1 extends View {
 //            paintShade.setColor(Color.parseColor(magnifierColor));  //设置边框
 //            paintShade.setAlpha(magnifierAlpha);
 //            canvas.drawCircle(magnifierLen / 2, magnifierLen / 2, magnifierLen / 2, paintShade);
-        }
-        else {
+        } else {
 
             //左下角
             mPaintBlue.setAntiAlias(true);         //抗锯齿
@@ -337,11 +340,9 @@ public class MagnifierView1 extends View {
         public Builder alpha(int alpha) {
             if (alpha >= 200) {
                 this.magnifierAlpha = 200;
-            }
-            else if (alpha < 0) {
+            } else if (alpha < 0) {
                 this.magnifierAlpha = 0;
-            }
-            else {
+            } else {
                 this.magnifierAlpha = alpha;
             }
             return this;
