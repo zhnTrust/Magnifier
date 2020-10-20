@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 
-public class MyBall extends View {
+public class tdxMagnifier extends View {
 
     private int mSize;
     private String mColor;
@@ -43,7 +43,7 @@ public class MyBall extends View {
     private Builder mBuilder;
 
 
-    public MyBall(Context context, Builder builder) {
+    public tdxMagnifier(Context context, Builder builder) {
         super(context);
         mBuilder = builder;
 
@@ -71,11 +71,11 @@ public class MyBall extends View {
 
     }
 
-    public MyBall(Context context, AttributeSet attrs) {
+    public tdxMagnifier(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MyBall(Context context, AttributeSet attrs, int defStyleAttr) {
+    public tdxMagnifier(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -125,10 +125,43 @@ public class MyBall extends View {
             case MotionEvent.ACTION_MOVE: {
                 float curX = event.getRawX();
                 float curY = event.getRawY();
-                //移动
-                setX(mPreLocationX + (curX - mDownX));
-                setY(mPreLocationY + (curY - mDownY));
-                invalidate();
+                int offsetX = (int) (curX - mDownX);
+                int offsetY = (int) (curY - mDownY);
+                //移动(方法一)
+                int newPosX = (int) (mPreLocationX + offsetX);
+                int newPosY = (int) (mPreLocationY + offsetY);
+                setX(newPosX);
+                setY(newPosY);
+//                invalidate();
+//                layout(newPosX, newPosY, newPosX + mSize, newPosY + mSize);
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) getLayoutParams();
+                int leftMargin = layoutParams.leftMargin;
+                //移动(方法二)
+//                ViewGroup.LayoutParams layoutParams = getLayoutParams();
+//                if (layoutParams instanceof RelativeLayout.LayoutParams) {
+//                    ((RelativeLayout.LayoutParams) layoutParams).leftMargin = getLeft() + offsetX;
+//                    ((RelativeLayout.LayoutParams) layoutParams).leftMargin = getTop() + offsetY;
+//                }
+//                else if (layoutParams instanceof LinearLayout.LayoutParams) {
+//                    ((LinearLayout.LayoutParams) layoutParams).leftMargin = getLeft() + offsetX;
+//                    ((LinearLayout.LayoutParams) layoutParams).leftMargin = getTop() + offsetY;
+//
+//                }
+//                requestLayout();
+                //移动(方法三)
+//                layout(
+//                        getLeft() + offsetX,
+//                        getTop() + offsetY,
+//                        getRight() + offsetX,
+//                        getBottom() + offsetY
+//                );
+                //移动(方法四)
+//                offsetLeftAndRight(offsetX);
+//                offsetTopAndBottom(offsetY);
+                //移动(方法五)
+//                setTranslationX(getTranslationX() + offsetX);
+//                setTranslationY(getTranslationY() + offsetY);
+
                 break;
             }
             default: {
@@ -170,8 +203,19 @@ public class MyBall extends View {
 
 
     public void refresh(float x, float y) {
+        int targetMeasuredWidth = mTarget.getMeasuredWidth();
+        int parentMeasuredWidth = mParent.getMeasuredWidth();
+        int parentPaddingLeft = mParent.getPaddingLeft();
+        int parentPaddingRight = mParent.getPaddingLeft();
+        if (x > targetMeasuredWidth / 2) {
+            setX(0 + parentPaddingLeft);
+        }
+        else {
+            setX(parentMeasuredWidth - mSize - parentPaddingRight);
+        }
         this.centerX = x;
         this.centerY = y;
+
         invalidate();
     }
 
@@ -248,8 +292,8 @@ public class MyBall extends View {
             return this;
         }
 
-        public MyBall build() {
-            return new MyBall(context, this);
+        public tdxMagnifier build() {
+            return new tdxMagnifier(context, this);
         }
     }
 

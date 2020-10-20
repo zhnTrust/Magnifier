@@ -13,10 +13,11 @@ import android.widget.Switch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.ct.ctmagnifier.FloatTools;
+import com.ct.ctmagnifier.tdxFloatToolBar;
 import com.ct.ctmagnifier.MagnifierView;
-import com.ct.ctmagnifier.MagnifierView1;
-import com.ct.ctmagnifier.MagnifierView2;
-import com.ct.ctmagnifier.MyBall;
+import com.ct.ctmagnifier.tdxMagnifier;
+import com.ct.ctmagnifier.tdxBottomScrollToolBar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,8 +32,10 @@ public class MainActivity extends AppCompatActivity {
     //private MagnifierView1 mMagnifierView1;
     //private MagnifierView2 mMagnifierView2;
 
-    private MyBall myBall1;
-    private MyBall myBall2;
+    private FloatTools mFloatTools;
+
+    private tdxMagnifier tdxMagnifier1;
+    private tdxMagnifier tdxMagnifier2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,19 @@ public class MainActivity extends AppCompatActivity {
         switchBtn3 = findViewById(R.id.switchBtn3);
         mBtnReset = findViewById(R.id.btn_restore);
 
+//        mFloatTools = new FloatTools.Builder(this)
+//                .setParent(contentView)
+//                .setSize(400, 800)
+//                .setPostion(200, 400)
+//                .build();
+//        mFloatTools.attachToViewTree();
+
+        tdxFloatToolBar tdxFloatToolBar = new tdxFloatToolBar.Builder(this)
+                .size(150, 150)
+                .vSpace(10)
+                .build();
+        contentView.addView(tdxFloatToolBar);
+
 
         //mMagnifierView1 = new MagnifierView1.Builder(MainActivity.this)
         //        //.rootVg(mRelativeLayout)
@@ -69,15 +85,15 @@ public class MainActivity extends AppCompatActivity {
                 .viewWH(200, 200)
                 .build();
 
-        myBall1 = new MyBall.Builder(this)
+        tdxMagnifier1 = new tdxMagnifier.Builder(this)
                 .size(280)
                 .scale(1.5f)
                 .parent(contentView)
                 .singleRlRule(RelativeLayout.CENTER_HORIZONTAL)
                 .target(rl_image)
-                .center(79, 55)
+                .center(140, 140)
                 .build();
-        myBall2 = new MyBall.Builder(this)
+        tdxMagnifier2 = new tdxMagnifier.Builder(this)
                 .size(300)
                 .scale(1.5f)
                 .parent(contentView)
@@ -85,10 +101,16 @@ public class MainActivity extends AppCompatActivity {
                 .center(83, 25)
                 .target(ll_contents)
                 .build();
-        myBall1.attachToParent();
-        myBall2.attachToParent();
-        mMagnifierView.startViewToRoot();
+        tdxMagnifier1.attachToParent();
+        tdxMagnifier2.attachToParent();
+//        mMagnifierView.startViewToRoot();
 
+        tdxBottomScrollToolBar tdxBottomScrollToolBar = new tdxBottomScrollToolBar.Builder(this)
+                .parent(contentView)
+                .size(900,150)
+                .childCount(10)
+                .build();
+        tdxBottomScrollToolBar.attachToParent();
 
     }
 
@@ -99,9 +121,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    myBall1.attachToParent();
-                } else {
-                    myBall1.detachFromParent();
+                    tdxMagnifier1.attachToParent();
+                }
+                else {
+                    tdxMagnifier1.detachFromParent();
                 }
             }
         });
@@ -111,9 +134,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    myBall2.attachToParent();
-                } else {
-                    myBall2.detachFromParent();
+                    tdxMagnifier2.attachToParent();
+                }
+                else {
+                    tdxMagnifier2.detachFromParent();
                 }
             }
         });
@@ -122,7 +146,8 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     mMagnifierView.startViewToRoot();
-                } else {
+                }
+                else {
                     mMagnifierView.closeViewToRoot();
                 }
             }
@@ -132,11 +157,11 @@ public class MainActivity extends AppCompatActivity {
         mBtnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (myBall1 != null && myBall1.getParent() != null) {
-                    myBall1.restore();
+                if (tdxMagnifier1 != null && tdxMagnifier1.getParent() != null) {
+                    tdxMagnifier1.restore();
                 }
-                if (myBall2 != null && myBall2.getParent() != null) {
-                    myBall2.restore();
+                if (tdxMagnifier2 != null && tdxMagnifier2.getParent() != null) {
+                    tdxMagnifier2.restore();
                 }
             }
         });
@@ -147,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                     case MotionEvent.ACTION_MOVE: {
-                        myBall1.refresh(event.getX(), event.getY());
+                        tdxMagnifier1.refresh(event.getX(), event.getY());
                         break;
                     }
                     default: {
@@ -157,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
         rl_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,13 +195,12 @@ public class MainActivity extends AppCompatActivity {
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
                     case MotionEvent.ACTION_MOVE:
-                        myBall2.refresh(event.getX(), event.getY());
+                        tdxMagnifier2.refresh(event.getX(), event.getY());
                         break;
                 }
                 return false;
             }
         });
-
         ll_contents.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

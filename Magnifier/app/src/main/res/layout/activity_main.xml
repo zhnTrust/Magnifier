@@ -33,7 +33,7 @@
             android:id="@+id/switchBtn3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
+            android:checked="false"
             android:text="覆盖放大" />
 
 
@@ -65,20 +65,15 @@
         <RelativeLayout
             android:id="@+id/rl_image"
             android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:layout_marginTop="320px">
+            android:layout_height="230dp"
+            android:layout_marginTop="180px">
 
-            <com.example.digitalclock.CustomTimeView
-                android:id="@+id/time2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="visible" />
 
             <ImageView
+
                 android:id="@+id/iv_center"
                 android:layout_width="265dp"
                 android:layout_height="160dp"
-                android:layout_below="@+id/time2"
                 android:layout_alignParentBottom="false"
                 android:src="@drawable/test2" />
 
@@ -97,6 +92,29 @@
             android:src="@drawable/test" />
 
     </LinearLayout>
+
+    <HorizontalScrollView
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="400px"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorAccent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="按钮" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
 
 
 </RelativeLayout>
